@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.com/VadimShein/job4j_todo.svg?branch=main)](https://travis-ci.com/VadimShein/job4j_todo)
 
 
 # <p align="center">ToDo</p>
