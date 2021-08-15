@@ -54,4 +54,15 @@ public class PsqlStore implements Store, AutoCloseable {
         session.getTransaction().commit();
         session.close();
     }
+
+    @Override
+    public void updateTask(int id) {
+        Session session = sf.openSession();
+        session.beginTransaction();
+        Item item = session.get(Item.class, id);
+        item.setDone(true);
+        session.update(item);
+        session.getTransaction().commit();
+        session.close();
+    }
 }

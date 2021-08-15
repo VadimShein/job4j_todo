@@ -16,6 +16,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="table.js"></script>
 
 <div class="container">
     <br>
@@ -24,8 +25,6 @@
         <h2>Список заданий</h2>
     </div>
         <br>
-
-<!--    <br><h2>Список заданий</h2><br>-->
     <div>
         <form class="form-inline" action="http://localhost:8080/job4j_todo/task" method="post">
             <div>
@@ -36,8 +35,8 @@
     </div>
     <br><br>
     <div class="card-body">
+        <input type="checkbox" name="select" onclick="getTasks()"><label>&nbsp Показать все задания</label>
         <table class="table table-bordered">
-                <input type="checkbox" name="select" onclick="getTasks()"><label>&nbsp Показать все задания</label>
             <thead>
             <tr>
                 <th style="width: 80px;">№</th>
@@ -51,58 +50,5 @@
     </div>
     </div>
 </div>
-
-<script>
-    function validate() {
-        let rsl = true
-        let atr = $('.form-control')
-        for (let node of atr) {
-            if (node.value === '' || node.value === null) {
-                alert("Поле не заполнено");
-                rsl = false
-                break
-            }
-        }
-        return rsl
-    }
-    function getTasks() {
-        let allTasks = false
-        if (document.querySelector("input[name=select]:checked")) {
-            allTasks = true
-        }
-        $.ajax({
-            type: 'GET',
-            crossDomain : true,
-            url: 'http://localhost:8080/job4j_todo/task?allTasks=' + allTasks,
-            dataType: 'text',
-        }).done(function(data) {
-            let dt = JSON.parse(data)
-            console.log(data)
-            for (const [key, value] of Object.entries(dt)) {
-                let parent = document.querySelector('tbody')
-                parent.textContent = ''
-                 for (let i = 0; i < value.length; i++) {
-                     let tr = document.createElement('tr')
-                     let numb = document.createElement('td')
-                     numb.innerHTML = `${i + 1}`
-                     let desc = document.createElement('td')
-                     desc.innerHTML = `${value[i].description}`
-                     let divCenter = document.createElement('div')
-                     divCenter.style.textAlign = "center"
-                     let done = document.createElement('input')
-                     done.type = "checkbox"
-                     if (value[i].done) {
-                         done.setAttribute("checked", "checked")
-                     }
-                     divCenter.appendChild(done)
-                     tr.appendChild(numb)
-                     tr.appendChild(desc)
-                     tr.appendChild(divCenter)
-                     parent.appendChild(tr)
-                 }
-            }
-        });
-    }
-</script>
 </body>
 </html>

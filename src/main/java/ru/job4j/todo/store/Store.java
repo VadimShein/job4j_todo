@@ -8,4 +8,5 @@ public interface Store {
     List<Item> getTasks();
     List<Item> getCurrentTasks();
     void addTask(Item item);
+    void updateTask(int id);
 }

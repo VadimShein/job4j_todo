@@ -4,7 +4,6 @@ import org.json.JSONObject;
 import ru.job4j.todo.model.Item;
 import ru.job4j.todo.store.PsqlStore;
 
-
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -20,6 +19,11 @@ public class TaskServlet extends HttpServlet {
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         resp.setContentType("text/plain");
         resp.setCharacterEncoding("UTF-8");
+
+        if (req.getParameter("complete") != null) {
+            PsqlStore.instOf().updateTask(Integer.parseInt(req.getParameter("complete")));
+        }
+
 
         List<Item> items;
         if ("true".equals(req.getParameter("allTasks"))) {
