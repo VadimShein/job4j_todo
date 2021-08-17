@@ -7,6 +7,6 @@
 The app shows a list of unfinished tasks. If the task is marked as completed, then it disappears from the list.
 ### Screenshots:
 
-![ScreenShot](./images/todo1.PNG)
+![ScreenShot](./images/todo_1.PNG)
 
-![ScreenShot](./images/todo2.PNG)
+![ScreenShot](./images/todo_2.PNG)

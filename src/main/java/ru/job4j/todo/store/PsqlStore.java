@@ -2,12 +2,14 @@ package ru.job4j.todo.store;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import ru.job4j.todo.model.Item;
 
 import java.util.List;
+import java.util.function.Function;
 
 public class PsqlStore implements Store, AutoCloseable {
     private final StandardServiceRegistry registry = new StandardServiceRegistryBuilder().configure().build();
@@ -21,6 +23,19 @@ public class PsqlStore implements Store, AutoCloseable {
         return Lazy.INST;
     }
 
+    private <T> T tx(final Function<Session, T> command) {
+        final Session session = sf.openSession();
+        try (session) {
+            final Transaction tx = session.beginTransaction();
+            T rsl = command.apply(session);
+            tx.commit();
+            return rsl;
+        } catch (final Exception e) {
+            session.getTransaction().rollback();
+            throw e;
+        }
+    }
+
     @Override
     public void close() {
         StandardServiceRegistryBuilder.destroy(registry);
@@ -28,41 +43,34 @@ public class PsqlStore implements Store, AutoCloseable {
 
     @Override
     public List<Item> getTasks() {
-        Session session = sf.openSession();
-        session.beginTransaction();
-        List result = session.createQuery("from ru.job4j.todo.model.Item").list();
-        session.getTransaction().commit();
-        session.close();
-        return result;
+        return this.tx(
+                session -> session.createQuery("from ru.job4j.todo.model.Item").list()
+        );
     }
 
     @Override
     public List<Item> getCurrentTasks() {
-        Session session = sf.openSession();
-        session.beginTransaction();
-        List result = session.createQuery("from ru.job4j.todo.model.Item where done = false").list();
-        session.getTransaction().commit();
-        session.close();
-        return result;
+        return this.tx(
+                session -> session.createQuery("from ru.job4j.todo.model.Item where done = false").list()
+        );
     }
 
     @Override
     public void addTask(Item item) {
-        Session session = sf.openSession();
-        session.beginTransaction();
-        session.save(item);
-        session.getTransaction().commit();
-        session.close();
+        this.tx(
+                session -> session.save(item)
+        );
     }
 
     @Override
     public void updateTask(int id) {
-        Session session = sf.openSession();
-        session.beginTransaction();
-        Item item = session.get(Item.class, id);
-        item.setDone(true);
-        session.update(item);
-        session.getTransaction().commit();
-        session.close();
+        this.tx(
+                session -> {
+                    Item item = session.get(Item.class, id);
+                    item.setDone(true);
+                    session.update(item);
+                    return item;
+                }
+        );
     }
 }
