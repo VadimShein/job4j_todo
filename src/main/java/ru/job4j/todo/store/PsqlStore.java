@@ -7,7 +7,9 @@ import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import ru.job4j.todo.model.Item;
+import ru.job4j.todo.model.User;
 
+import javax.persistence.Query;
 import java.util.List;
 import java.util.function.Function;
 
@@ -42,23 +44,33 @@ public class PsqlStore implements Store, AutoCloseable {
     }
 
     @Override
-    public List<Item> getTasks() {
+    public List<Item> getTasks(int userId) {
         return this.tx(
-                session -> session.createQuery("from ru.job4j.todo.model.Item").list()
+                session -> {
+                    Query query = session.createQuery(
+                            "from ru.job4j.todo.model.Item as item where (item.user.id = :userId)");
+                    query.setParameter("userId", userId);
+                    return query.getResultList();
+                }
         );
     }
 
     @Override
-    public List<Item> getCurrentTasks() {
+    public List<Item> getCurrentTasks(int userId) {
         return this.tx(
-                session -> session.createQuery("from ru.job4j.todo.model.Item where done = false").list()
+                session -> {
+                    Query query = session.createQuery(
+                            "from ru.job4j.todo.model.Item as item where (item.done = false) and (item.user.id = :userId)");
+                    query.setParameter("userId", userId);
+                    return query.getResultList();
+                }
         );
     }
 
     @Override
     public void addTask(Item item) {
         this.tx(
-                session -> session.save(item)
+               session -> session.save(item)
         );
     }
 
@@ -70,6 +82,28 @@ public class PsqlStore implements Store, AutoCloseable {
                     item.setDone(true);
                     session.update(item);
                     return item;
+                }
+        );
+    }
+
+    @Override
+    public void createUser(User user) {
+        this.tx(
+                session -> session.save(user)
+        );
+    }
+
+    @Override
+    public User findByEmailUser(String email) {
+        return this.tx(
+                session -> {
+                    User user = null;
+                    Query query = session.createQuery("from ru.job4j.todo.model.User where email = :email");
+                    query.setParameter("email", email);
+                    if (query.getResultList().size() > 0) {
+                        user = (User) query.getResultList().get(0);
+                    }
+                    return user;
                 }
         );
     }

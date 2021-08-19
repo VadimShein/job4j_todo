@@ -3,7 +3,7 @@ function validate() {
     let atr = $('.form-control')
     for (let node of atr) {
         if (node.value === '' || node.value === null) {
-            alert("Поле не заполнено");
+            alert(node.getAttribute('title'));
             rsl = false
             break
         }
@@ -11,16 +11,17 @@ function validate() {
     return rsl
 }
 
-function getTasks(id) {
+function getTasks(userId, taskId) {
     let url
     let allTasks = false
+
     if (document.querySelector("input[name=select]:checked")) {
         allTasks = true
     }
-    if (id == null) {
-        url = 'http://localhost:8080/job4j_todo/task?allTasks=' + allTasks
+    if (typeof taskId != "undefined") {
+        url = 'http://localhost:8080/job4j_todo/task.do?allTasks=' + allTasks  + "&userId=" + userId + "&taskId=" + taskId
     } else {
-        url = 'http://localhost:8080/job4j_todo/task?allTasks=' + allTasks + '&complete=' + id
+        url = 'http://localhost:8080/job4j_todo/task.do?allTasks=' + allTasks  + "&userId=" + userId
     }
 
     $.ajax({
@@ -39,12 +40,14 @@ function getTasks(id) {
                 numb.innerHTML = `${i + 1}`
                 let desc = document.createElement('td')
                 desc.innerHTML = `${value[i].description}`
+                let author = document.createElement('td')
+                author.innerHTML = `${value[i].user.name}`
                 let done = document.createElement('td')
                 let doneDiv = document.createElement('div')
                 doneDiv.style.textAlign = "center"
                 let doneInput = document.createElement('input')
                 doneInput.type = "checkbox"
-                doneInput.onclick = function() {getTasks(this.id)}
+                doneInput.onclick = function() {getTasks(userId, this.id)}
                 doneInput.id = value[i].id
                 if (value[i].done) {
                     doneInput.setAttribute("checked", "checked")
@@ -53,6 +56,7 @@ function getTasks(id) {
                 done.appendChild(doneDiv)
                 tr.appendChild(numb)
                 tr.appendChild(desc)
+                tr.appendChild(author)
                 tr.appendChild(done)
                 tbody.appendChild(tr)
             }

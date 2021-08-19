@@ -9,9 +9,26 @@
     <servlet-name>TaskServlet</servlet-name>
     <servlet-class>ru.job4j.todo.servlet.TaskServlet</servlet-class>
   </servlet>
+  <servlet>
+    <servlet-name>AuthServlet</servlet-name>
+    <servlet-class>ru.job4j.todo.servlet.AuthServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>RegServlet</servlet-name>
+    <servlet-class>ru.job4j.todo.servlet.RegServlet</servlet-class>
+  </servlet>
+
 
   <servlet-mapping>
     <servlet-name>TaskServlet</servlet-name>
-    <url-pattern>/task</url-pattern>
+    <url-pattern>/task.do</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>AuthServlet</servlet-name>
+    <url-pattern>/auth.do</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>RegServlet</servlet-name>
+    <url-pattern>/reg.do</url-pattern>
   </servlet-mapping>
 </web-app>

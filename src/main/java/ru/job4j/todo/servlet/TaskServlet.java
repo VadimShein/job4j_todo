@@ -2,6 +2,7 @@ package ru.job4j.todo.servlet;
 
 import org.json.JSONObject;
 import ru.job4j.todo.model.Item;
+import ru.job4j.todo.model.User;
 import ru.job4j.todo.store.PsqlStore;
 
 import javax.servlet.http.HttpServlet;
@@ -20,16 +21,14 @@ public class TaskServlet extends HttpServlet {
         resp.setContentType("text/plain");
         resp.setCharacterEncoding("UTF-8");
 
-        if (req.getParameter("complete") != null) {
-            PsqlStore.instOf().updateTask(Integer.parseInt(req.getParameter("complete")));
+        if (req.getParameter("taskId") != null) {
+            PsqlStore.instOf().updateTask(Integer.parseInt(req.getParameter("taskId")));
         }
-
-
         List<Item> items;
         if ("true".equals(req.getParameter("allTasks"))) {
-            items = PsqlStore.instOf().getTasks();
+            items = PsqlStore.instOf().getTasks(Integer.parseInt(req.getParameter("userId")));
         } else {
-            items = PsqlStore.instOf().getCurrentTasks();
+            items = PsqlStore.instOf().getCurrentTasks(Integer.parseInt(req.getParameter("userId")));
         }
 
         JSONObject jsonObj = new JSONObject();
@@ -41,12 +40,16 @@ public class TaskServlet extends HttpServlet {
     @Override
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         req.setCharacterEncoding("UTF-8");
-        Item item = new Item(
-                req.getParameter("desc"),
-                new Timestamp(System.currentTimeMillis()),
-                false);
-        System.out.println(item.getDescription());
-        PsqlStore.instOf().addTask(item);
-        resp.sendRedirect(req.getContextPath() + "/index.html");
+        User user;
+        if (req.getParameter("userEmail") != null) {
+            user = PsqlStore.instOf().findByEmailUser(req.getParameter("userEmail"));
+            Item item = new Item(
+                    req.getParameter("desc"),
+                    new Timestamp(System.currentTimeMillis()),
+                    false,
+                    user);
+            PsqlStore.instOf().addTask(item);
+        }
+        resp.sendRedirect(req.getContextPath() + "/index.jsp");
     }
 }

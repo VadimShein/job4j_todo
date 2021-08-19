@@ -13,14 +13,17 @@ public class Item {
     private String description;
     private Timestamp created;
     private Boolean done;
-
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
     public Item() {
     }
 
-    public Item(String description, Timestamp created, Boolean done) {
+    public Item(String description, Timestamp created, Boolean done, User user) {
         this.description = description;
         this.created = created;
         this.done = done;
+        this.user = user;
     }
 
     public Integer getId() {
@@ -53,6 +56,14 @@ public class Item {
 
     public void setDone(Boolean done) {
         this.done = done;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     @Override
