@@ -40,16 +40,12 @@ public class TaskServlet extends HttpServlet {
     @Override
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         req.setCharacterEncoding("UTF-8");
-        User user;
-        if (req.getParameter("userEmail") != null) {
-            user = PsqlStore.instOf().findByEmailUser(req.getParameter("userEmail"));
             Item item = new Item(
                     req.getParameter("desc"),
                     new Timestamp(System.currentTimeMillis()),
                     false,
-                    user);
+                    (User) req.getSession().getAttribute("user"));
             PsqlStore.instOf().addTask(item);
-        }
         resp.sendRedirect(req.getContextPath() + "/index.jsp");
     }
 }
