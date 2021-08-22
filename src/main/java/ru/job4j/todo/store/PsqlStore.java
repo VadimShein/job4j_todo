@@ -95,16 +95,9 @@ public class PsqlStore implements Store, AutoCloseable {
 
     @Override
     public User findByEmailUser(String email) {
-        return this.tx(
-                session -> {
-                    User user = null;
-                    Query query = session.createQuery("from ru.job4j.todo.model.User where email = :email");
-                    query.setParameter("email", email);
-                    if (query.getResultList().size() > 0) {
-                        user = (User) query.getResultList().get(0);
-                    }
-                    return user;
-                }
+        return (User) this.tx(
+                session -> session.createQuery("from ru.job4j.todo.model.User where email = :email")
+                        .setParameter("email", email).uniqueResult()
         );
     }
 }
