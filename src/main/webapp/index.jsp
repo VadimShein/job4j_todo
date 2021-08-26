@@ -42,17 +42,31 @@
         <div class="card-header">
             <h2>Список заданий</h2>
         </div>
-        <br>
-        <div>
-            <form class="form-inline" action="http://localhost:8080/job4j_todo/task.do" method="post">
-                <div>
-                    <input type="text" class="form-control" name="desc" id="desc" placeholder="Описание" title="Заполните поле описание">
-                    <input type="hidden" class="form-control" name="userEmail" id="userEmail" value="<c:out value="${user.email}"/>">
-                    <button type="submit" class="btn btn-success" onclick="return validate()">Добавить задание</button>
+<%--        <br>--%>
+        <div class="card-body">
+            <form action="http://localhost:8080/job4j_todo/task.do" method="post">
+                <div class="form-group row">
+                    <div class= "col-sm-5">
+                        <label class="col-form-label col-sm-6" for="cIds">Описание</label>
+                        <input type="text" class="form-control" name="desc" id="desc" title="Заполните поле описание">
+                        <input type="hidden" class="form-control" name="userEmail" id="userEmail" value="<c:out value="${user.email}"/>">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-sm-5">
+                        <label class="col-form-label col-sm-6" for="cIds">Список категорий</label>
+                        <select class="form-control" multiple name="cIds" id="cIds" title="Выберите категорию">
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-sm-5">
+                        <button type="submit" class="btn btn-success" onclick="return validate()">Добавить задание</button>
+                    </div>
                 </div>
             </form>
         </div>
-        <br><br>
+<%--        <br><br>--%>
         <div class="card-body">
             <input type="checkbox" name="select" onclick="getTasks('<c:out value="${user.id}"/>')"><label>&nbsp Показать все задания</label>
             <table class="table table-bordered">

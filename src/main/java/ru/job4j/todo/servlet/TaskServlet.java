@@ -1,6 +1,7 @@
 package ru.job4j.todo.servlet;
 
 import org.json.JSONObject;
+import ru.job4j.todo.model.Category;
 import ru.job4j.todo.model.Item;
 import ru.job4j.todo.model.User;
 import ru.job4j.todo.store.PsqlStore;
@@ -30,9 +31,11 @@ public class TaskServlet extends HttpServlet {
         } else {
             items = PsqlStore.instOf().getCurrentTasks(Integer.parseInt(req.getParameter("userId")));
         }
+        List<Category> categories = PsqlStore.instOf().getAllCategories();
 
         JSONObject jsonObj = new JSONObject();
         jsonObj.put("tasks", items);
+        jsonObj.put("categories", categories);
         PrintWriter writer = new PrintWriter(resp.getOutputStream(), true, StandardCharsets.UTF_8);
         writer.println(jsonObj.toString());
     }
@@ -40,12 +43,16 @@ public class TaskServlet extends HttpServlet {
     @Override
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         req.setCharacterEncoding("UTF-8");
-            Item item = new Item(
-                    req.getParameter("desc"),
-                    new Timestamp(System.currentTimeMillis()),
-                    false,
-                    (User) req.getSession().getAttribute("user"));
-            PsqlStore.instOf().addTask(item);
+        Item item = new Item(
+                req.getParameter("desc"),
+                new Timestamp(System.currentTimeMillis()),
+                false,
+                (User) req.getSession().getAttribute("user"));
+        String[] categories = req.getParameterValues("cIds");
+        for (String cat : categories) {
+            item.addCategory(PsqlStore.instOf().findCategoryById(Integer.parseInt(cat)));
+        }
+        PsqlStore.instOf().addTask(item);
         resp.sendRedirect(req.getContextPath() + "/index.jsp");
     }
 }

@@ -32,33 +32,47 @@ function getTasks(userId, taskId) {
     }).done(function(data) {
         let dt = JSON.parse(data)
         for (const [key, value] of Object.entries(dt)) {
-            let tbody = document.querySelector('tbody')
-            tbody.textContent = ''
-            for (let i = 0; i < value.length; i++) {
-                let tr = document.createElement('tr')
-                let numb = document.createElement('td')
-                numb.innerHTML = `${i + 1}`
-                let desc = document.createElement('td')
-                desc.innerHTML = `${value[i].description}`
-                let author = document.createElement('td')
-                author.innerHTML = `${value[i].user.name}`
-                let done = document.createElement('td')
-                let doneDiv = document.createElement('div')
-                doneDiv.style.textAlign = "center"
-                let doneInput = document.createElement('input')
-                doneInput.type = "checkbox"
-                doneInput.onclick = function() {getTasks(userId, this.id)}
-                doneInput.id = value[i].id
-                if (value[i].done) {
-                    doneInput.setAttribute("checked", "checked")
+            if (key === 'categories') {
+                let select = document.querySelector("select[name=cIds]")
+                for (let i = 0; i < value.length; i++) {
+                    let option = document.createElement('option')
+                    option.textContent = ''
+                    option.value = value[i].id
+                    option.text = value[i].name
+                    select.appendChild(option)
                 }
-                doneDiv.appendChild(doneInput)
-                done.appendChild(doneDiv)
-                tr.appendChild(numb)
-                tr.appendChild(desc)
-                tr.appendChild(author)
-                tr.appendChild(done)
-                tbody.appendChild(tr)
+            }
+            if (key === 'tasks') {
+                let tbody = document.querySelector('tbody')
+                tbody.textContent = ''
+                for (let i = 0; i < value.length; i++) {
+                    let tr = document.createElement('tr')
+                    let numb = document.createElement('td')
+                    numb.innerHTML = `${i + 1}`
+                    let desc = document.createElement('td')
+                    desc.innerHTML = `${value[i].description}`
+                    let author = document.createElement('td')
+                    author.innerHTML = `${value[i].user.name}`
+                    let done = document.createElement('td')
+                    let doneDiv = document.createElement('div')
+                    doneDiv.style.textAlign = "center"
+                    let doneInput = document.createElement('input')
+                    doneInput.type = "checkbox"
+                    doneInput.onclick = function () {
+                        getTasks(userId, this.id)
+                    }
+                    doneInput.id = value[i].id
+                    if (value[i].done) {
+                        doneInput.setAttribute("checked", "checked")
+                    }
+                    doneDiv.appendChild(doneInput)
+                    done.appendChild(doneDiv)
+                    tr.appendChild(numb)
+                    tr.appendChild(desc)
+                    tr.appendChild(author)
+                    tr.appendChild(done)
+                    tbody.appendChild(tr)
+                }
             }
         }
     });
