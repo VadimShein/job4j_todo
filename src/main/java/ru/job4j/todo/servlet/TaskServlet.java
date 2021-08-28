@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
-import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
 
@@ -45,7 +45,7 @@ public class TaskServlet extends HttpServlet {
         req.setCharacterEncoding("UTF-8");
         Item item = new Item(
                 req.getParameter("desc"),
-                new Timestamp(System.currentTimeMillis()),
+                new Date(System.currentTimeMillis()),
                 false,
                 (User) req.getSession().getAttribute("user"));
         String[] categories = req.getParameterValues("cIds");
