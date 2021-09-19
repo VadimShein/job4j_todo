@@ -11,67 +11,71 @@ function validate() {
     return rsl
 }
 
-function getTasks(userId, taskId) {
-    let url
+function getTasks(userId) {
     let allTasks = false
 
     if (document.querySelector("input[name=select]:checked")) {
         allTasks = true
     }
-    if (typeof taskId != "undefined") {
-        url = 'http://localhost:8080/job4j_todo/task.do?allTasks=' + allTasks  + "&userId=" + userId + "&taskId=" + taskId
-    } else {
-        url = 'http://localhost:8080/job4j_todo/task.do?allTasks=' + allTasks  + "&userId=" + userId
-    }
-
     $.ajax({
         type: 'GET',
         crossDomain : true,
-        url: url,
+        url: 'http://localhost:8080/job4j_todo/task.do?allTasks=' + allTasks + "&userId=" + userId,
         dataType: 'text',
     }).done(function(data) {
         let dt = JSON.parse(data)
         for (const [key, value] of Object.entries(dt)) {
             if (key === 'categories') {
-                let select = document.querySelector("select[name=cIds]")
+                let select = $('select[name=cIds]')
+                select.text("")
                 for (let i = 0; i < value.length; i++) {
-                    let option = document.createElement('option')
-                    option.textContent = ''
-                    option.value = value[i].id
-                    option.text = value[i].name
-                    select.appendChild(option)
+                    let option = $('<option>', {
+                        value: value[i].id,
+                        text: value[i].name
+                    })
+                    select.append(option)
                 }
             }
             if (key === 'tasks') {
-                let tbody = document.querySelector('tbody')
-                tbody.textContent = ''
+                let tbody = $('tbody').text("")
                 for (let i = 0; i < value.length; i++) {
-                    let tr = document.createElement('tr')
-                    let numb = document.createElement('td')
-                    numb.innerHTML = `${i + 1}`
-                    let desc = document.createElement('td')
-                    desc.innerHTML = `${value[i].description}`
-                    let author = document.createElement('td')
-                    author.innerHTML = `${value[i].user.name}`
-                    let done = document.createElement('td')
-                    let doneDiv = document.createElement('div')
-                    doneDiv.style.textAlign = "center"
-                    let doneInput = document.createElement('input')
-                    doneInput.type = "checkbox"
-                    doneInput.onclick = function () {
-                        getTasks(userId, this.id)
-                    }
-                    doneInput.id = value[i].id
+                    let tr = $('<tr>')
+                    let numb = $('<td>', {
+                        text: `${i + 1}`
+                    })
+                    let desc = $('<td>', {
+                        text: `${value[i].description}`
+                    })
+                    let date = $('<td>', {
+                        text: `${value[i].created}`
+                    })
+                    let checked
                     if (value[i].done) {
-                        doneInput.setAttribute("checked", "checked")
+                        checked = "checked"
                     }
-                    doneDiv.appendChild(doneInput)
-                    done.appendChild(doneDiv)
-                    tr.appendChild(numb)
-                    tr.appendChild(desc)
-                    tr.appendChild(author)
-                    tr.appendChild(done)
-                    tbody.appendChild(tr)
+                    let done = $('<td>').append($('<div>', {
+                        style: "text-align: center"
+                    }).append($('<input>', {
+                        id: `${value[i].id}`,
+                        type: "checkbox",
+                        checked: checked,
+                    }).on({'click': function() {
+                                let url = 'http://localhost:8080/job4j_todo/task.do?action=update&taskId=' + value[i].id + '&done=' + value[i].done
+                                $.ajax({
+                                    type: 'POST',
+                                    crossDomain : true,
+                                    url: url,
+                                    dataType: 'text',
+                                }).done(function() {
+                                    getTasks(userId)
+                                    }
+                                )
+                    }})))
+                    tr.append(numb)
+                    tr.append(desc)
+                    tr.append(date)
+                    tr.append(done)
+                    tbody.append(tr)
                 }
             }
         }

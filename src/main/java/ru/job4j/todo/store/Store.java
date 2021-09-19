@@ -10,9 +10,10 @@ public interface Store {
     List<Item> getTasks(int userId);
     List<Item> getCurrentTasks(int userId);
     void addTask(Item item);
-    void updateTask(int id);
+    void updateTask(Item item);
     void createUser(User user);
     User findByEmailUser(String email);
     List<Category> getAllCategories();
     Category findCategoryById(int id);
+    Item findTaskById(int id);
 }

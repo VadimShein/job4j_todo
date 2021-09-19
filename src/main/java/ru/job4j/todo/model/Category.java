@@ -11,10 +11,11 @@ public class Category {
     private int id;
     private String name;
 
-    public static Category of(String name) {
-        Category cat = new Category();
-        cat.name = name;
-        return cat;
+    public Category() {
+    }
+
+    public Category(String name) {
+        this.name = name;
     }
 
     public int getId() {
@@ -42,11 +43,19 @@ public class Category {
             return false;
         }
         Category category = (Category) o;
-        return id == category.id && name.equals(category.name);
+        return id == category.id;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name);
+        return Objects.hash(id);
+    }
+
+    @Override
+    public String toString() {
+        return "Category{"
+                + "id=" + id
+                + ", name='" + name + '\''
+                + '}';
     }
 }

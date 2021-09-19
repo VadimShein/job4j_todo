@@ -27,55 +27,48 @@
         <ul class="nav">
             <c:if test="${user.name == null}">
                 <li class="nav-item">
-                    <a class="nav-link" href="<%=request.getContextPath()%>/login.jsp">Войти</a>
+                    <a class="nav-link" href="<c:url value="login.jsp"/>">Войти</a>
                 </li>
             </c:if>
             <c:if test="${user.name != null}">
                 <li class="nav-item">
-                    <a class="nav-link" href="<%=request.getContextPath()%>/login.jsp"> <c:out value="${user.name}"/> | Выйти</a>
+                    <a class="nav-link" href="<c:url value="logout.do"/>"> <c:out value="${user.name}"/> | Выйти</a>
                 </li>
             </c:if>
         </ul>
     </div>
-    <br>
     <div class="card" style="width: 100%">
         <div class="card-header">
-            <h2>Список заданий</h2>
+            <h3>Список заданий</h3>
         </div>
-<%--        <br>--%>
         <div class="card-body">
-            <form action="http://localhost:8080/job4j_todo/task.do" method="post">
-                <div class="form-group row">
-                    <div class= "col-sm-5">
-                        <label class="col-form-label col-sm-6" for="cIds">Описание</label>
-                        <input type="text" class="form-control" name="desc" id="desc" title="Заполните поле описание">
+            <form action="http://localhost:8080/job4j_todo/task.do?action=add" method="post">
+                <div class="row" style="margin-bottom: 20px">
+                    <div class="col">
+                        <label for="cIds">Список категорий</label>
+                        <select class="form-control" name="cIds" id="cIds" title="Выберите категорию" multiple>
+                        </select>
+                    </div>
+                    <div class= "col">
+                        <label>Описание</label>
+                        <textarea rows="3" class="form-control" name="desc" id="desc" title="Заполните поле описание" style="height: 113px">
+                        </textarea>
                         <input type="hidden" class="form-control" name="userEmail" id="userEmail" value="<c:out value="${user.email}"/>">
                     </div>
                 </div>
-                <div class="form-group row">
-                    <div class="col-sm-5">
-                        <label class="col-form-label col-sm-6" for="cIds">Список категорий</label>
-                        <select class="form-control" multiple name="cIds" id="cIds" title="Выберите категорию">
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <div class="col-sm-5">
-                        <button type="submit" class="btn btn-success" onclick="return validate()">Добавить задание</button>
-                    </div>
+                <div style="float: bottom">
+                    <button type="submit" class="btn btn-success" onclick="return validate()">Добавить задание</button>
                 </div>
             </form>
-        </div>
-<%--        <br><br>--%>
-        <div class="card-body">
+            <br>
             <input type="checkbox" name="select" onclick="getTasks('<c:out value="${user.id}"/>')"><label>&nbsp Показать все задания</label>
-            <table class="table table-bordered">
+            <table class="table table-bordered" style="table-layout: fixed">
                 <thead>
                     <tr>
-                        <th style="width: 80px;">№</th>
-                        <th style="width: 600px;">Задание</th>
-                        <th style="width: 200px;">Автор</th>
-                        <th style="width: 100px;">Выполнено</th>
+                        <th style="width: 40px; text-align: center">№</th>
+                        <th style="width: 50%; text-align: center;">Задание</th>
+                        <th style=" text-align: center">Дата</th>
+                        <th style="text-align: center">Выполнено</th>
                     </tr>
                 </thead>
                 <tbody>

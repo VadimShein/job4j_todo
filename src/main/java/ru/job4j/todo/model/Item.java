@@ -12,6 +12,7 @@ public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    @Column(nullable = false)
     private String description;
     @Temporal(TemporalType.TIMESTAMP)
     private Date created;
@@ -85,14 +86,22 @@ public class Item {
             return false;
         }
         Item item = (Item) o;
-        return id.equals(item.id)
-                && description.equals(item.description)
-                && created.equals(item.created)
-                && Objects.equals(done, item.done);
+        return id.equals(item.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, description, created, done);
+        return Objects.hash(id);
+    }
+
+    @Override
+    public String toString() {
+        return "Item{"
+                + "id=" + id
+                + ", description='" + description + '\''
+                + ", created=" + created
+                + ", done=" + done
+                + ", user=" + user
+                + ", categories=" + categories + '}';
     }
 }

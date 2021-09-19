@@ -1,6 +1,5 @@
 package ru.job4j.todo.servlet;
 
-import ru.job4j.todo.model.Item;
 import ru.job4j.todo.model.User;
 import ru.job4j.todo.store.PsqlStore;
 
@@ -23,7 +22,6 @@ public class RegServlet  extends HttpServlet {
             User user = new User();
             user.setName(name);
             user.setEmail(email);
-            System.out.println("EMAIL " + email);
             user.setPassword(password);
             sc.setAttribute("user", user);
             PsqlStore.instOf().createUser(user);

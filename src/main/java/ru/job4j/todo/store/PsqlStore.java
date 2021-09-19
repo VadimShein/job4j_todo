@@ -10,7 +10,6 @@ import ru.job4j.todo.model.Category;
 import ru.job4j.todo.model.Item;
 import ru.job4j.todo.model.User;
 
-import javax.persistence.Query;
 import java.util.List;
 import java.util.function.Function;
 
@@ -47,25 +46,18 @@ public class PsqlStore implements Store, AutoCloseable {
     @Override
     public List<Item> getTasks(int userId) {
         return this.tx(
-                session -> {
-                    Query query = session.createQuery(
-                            "from ru.job4j.todo.model.Item as item where (item.user.id = :userId)");
-                    query.setParameter("userId", userId);
-                    return query.getResultList();
-                }
-        );
+                session -> session.createQuery("select distinct item from Item as item join fetch item.categories "
+                        + "where (item.user.id = :userId)", Item.class)
+                    .setParameter("userId", userId).getResultList());
     }
 
     @Override
     public List<Item> getCurrentTasks(int userId) {
         return this.tx(
-                session -> {
-                    Query query = session.createQuery(
-                            "from ru.job4j.todo.model.Item as item where (item.done = false) and (item.user.id = :userId)");
-                    query.setParameter("userId", userId);
-                    return query.getResultList();
-                }
-        );
+                session -> session.createQuery(
+                            "select distinct item from Item as item join fetch item.categories "
+                                    + "where (item.done = false) and (item.user.id = :userId)", Item.class)
+                    .setParameter("userId", userId).getResultList());
     }
 
     @Override
@@ -76,14 +68,21 @@ public class PsqlStore implements Store, AutoCloseable {
     }
 
     @Override
-    public void updateTask(int id) {
+    public void updateTask(Item item) {
         this.tx(
                 session -> {
-                    Item item = session.get(Item.class, id);
-                    item.setDone(true);
                     session.update(item);
                     return item;
                 }
+        );
+    }
+
+    @Override
+    public Item findTaskById(int id) {
+        return (Item) this.tx(
+                session -> session.createQuery(
+                        "from Item as it where (it.id = :id)")
+                        .setParameter("id", id).uniqueResult()
         );
     }
 
@@ -97,7 +96,7 @@ public class PsqlStore implements Store, AutoCloseable {
     @Override
     public User findByEmailUser(String email) {
         return (User) this.tx(
-                session -> session.createQuery("from ru.job4j.todo.model.User where email = :email")
+                session -> session.createQuery("from User where email = :email")
                         .setParameter("email", email).uniqueResult()
         );
     }
@@ -105,7 +104,7 @@ public class PsqlStore implements Store, AutoCloseable {
     @Override
     public List<Category> getAllCategories() {
         return this.tx(
-                session -> session.createQuery("from ru.job4j.todo.model.Category").list()
+                session -> session.createQuery("from Category", Category.class).list()
         );
     }
 
@@ -113,7 +112,7 @@ public class PsqlStore implements Store, AutoCloseable {
     public Category findCategoryById(int id) {
         return (Category) this.tx(
                 session -> session.createQuery(
-                        "from ru.job4j.todo.model.Category as cat where (cat.id = :id)")
+                        "from Category as cat where (cat.id = :id)")
                         .setParameter("id", id).uniqueResult()
         );
     }

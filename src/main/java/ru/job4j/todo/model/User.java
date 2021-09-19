@@ -63,14 +63,19 @@ public class User {
             return false;
         }
         User user = (User) o;
-        return id == user.id
-                && name.equals(user.name)
-                && email.equals(user.email)
-                && password.equals(user.password);
+        return id == user.id;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, email, password);
+        return Objects.hash(id);
+    }
+
+    @Override
+    public String toString() {
+        return "User{"
+                + "id=" + id
+                + ", name='" + name + '\''
+                + ", email='" + email + '\'' + '}';
     }
 }
